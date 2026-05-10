@@ -9,6 +9,16 @@ import { usePlaylist } from './playlist.js'
 
 const { queue, playNext, playPrev, reshuffle } = usePlaylist()
 const paused = ref(false)
+const controlsVisible = ref(false)
+let hideTimer = null
+
+function onMouseMove() {
+  controlsVisible.value = true
+  clearTimeout(hideTimer)
+  hideTimer = setTimeout(() => {
+    controlsVisible.value = false
+  }, 3000)
+}
 
 function togglePause() {
   paused.value = !paused.value
@@ -16,10 +26,19 @@ function togglePause() {
 </script>
 
 <template>
-  <div class="tv-app">
+  <div class="tv-app" @mousemove="onMouseMove">
     <VideoPlayer :src="queue[0].src" :paused="paused" @ended="playNext" />
     <ChannelLogo />
-    <PlayerControls :paused="paused" @prev="playPrev" @toggle-pause="togglePause" @skip="playNext" @reshuffle="reshuffle" />
+    <Transition name="fade">
+      <PlayerControls
+        v-if="controlsVisible"
+        :paused="paused"
+        @prev="playPrev"
+        @toggle-pause="togglePause"
+        @skip="playNext"
+        @reshuffle="reshuffle"
+      />
+    </Transition>
     <Sidebar :current="queue[0]" :next="queue[1]" />
     <BottomBar
       :items="[
@@ -36,5 +55,15 @@ function togglePause() {
   position: fixed;
   inset: 0;
   z-index: 1;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
