@@ -1,15 +1,48 @@
 <template>
   <div class="bottom-bar overlay-bar">
-    <span class="title">{{ title }}</span>
-    <span class="message">{{ message }}</span>
+    <Transition name="slide-fade" mode="out-in">
+      <div class="item" :key="currentIndex">
+        <span class="title">{{ currentItem.title }}</span>
+        <span class="message">{{ currentItem.message }}</span>
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-defineProps({
-  title: String,
-  message: String
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+
+const props = defineProps({
+  items: {
+    type: Array,
+    default: () => []
+  },
+  interval: {
+    type: Number,
+    default: 10000
+  }
 })
+
+const currentIndex = ref(0)
+
+const currentItem = computed(() => {
+  return props.items.length
+    ? props.items[currentIndex.value]
+    : { title: '', message: '' }
+})
+
+let timer
+
+onMounted(() => {
+  if (props.items.length <= 1) return
+
+  timer = setInterval(() => {
+    currentIndex.value =
+      (currentIndex.value + 1) % props.items.length
+  }, props.interval)
+})
+
+onUnmounted(() => clearInterval(timer))
 </script>
 
 <style scoped>
@@ -24,6 +57,13 @@ defineProps({
   margin: 30px;
   margin-right: 80px;
   padding: 0 20px;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.item {
+  display: flex;
+  align-items: center;
   gap: 16px;
 }
 

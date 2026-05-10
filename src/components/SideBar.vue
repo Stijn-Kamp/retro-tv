@@ -1,13 +1,13 @@
 <template>
   <div class="right-sidebar overlay-bar">
-    <Thumbnail src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fcdn.albumoftheyear.org%2Falbum%2Fthe-eminem-show-1.jpg&f=1&nofb=1&ipt=573a258917064c0178d4d9ef4ec7c2278f3290f00b3438d9877e7a10d7a0dfc9" />
+    <Thumbnail :src="current?.thumbnail" />
     <NowPlaying
-      artist="Eminem"
-      song="Without me"
-      album="The Slim Shady Show"
-      year="02"
+      :artist="current?.artist"
+      :song="current?.title"
+      :album="current?.album"
+      :year="current?.date"
     />
-    <NextUp song="Bruno Mars - Grenade" />
+    <NextUp :song="next?.filename" />
   </div>
 </template>
 
@@ -15,6 +15,11 @@
 import Thumbnail from './Thumbnail.vue'
 import NextUp from './NextUp.vue'
 import NowPlaying from './NowPlaying.vue'
+
+defineProps({
+  current: Object,
+  next: Object,
+})
 </script>
 
 <style scoped>

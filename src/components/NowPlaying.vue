@@ -2,45 +2,40 @@
   <div class="now-playing">
     <div class="year-row">
       <span class="year">'{{ year }}</span>
-      <span class="datetime">{{ datetime }}</span>
+      <InfoComponent />
     </div>
-    <p class="artist">{{ artist }}</p>
-    <p class="detail">
-      <i class="fas fa-music"></i>
-      {{ song }}
-    </p>
-    <p class="detail">
-      <i class="fas fa-compact-disc"></i>
-      {{ album }}
-    </p>
+
+    <p class="artist" v-if="artist">{{ artist }}</p>
+
+    <div class="details">
+      <p class="detail" v-if="song">
+        <i class="fas fa-music"></i>
+        {{ song }}
+      </p>
+
+      <p class="detail" v-if="album">
+        <i class="fas fa-compact-disc"></i>
+        {{ album }}
+      </p>
+
+      <p class="detail" v-if="info">
+        <i class="fas fa-circle-info"></i>
+        {{ info }}
+      </p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import InfoComponent from './InfoComponent.vue';
 
 defineProps({
   artist: String,
   song: String,
   album: String,
-  year: String
+  year: String,
+  info: String
 })
-
-const datetime = ref('')
-
-const updateTime = () => {
-  datetime.value = new Date().toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  })
-}
-let interval
-onMounted(() => {
-  updateTime()
-  interval = setInterval(updateTime, 1000)
-})
-onUnmounted(() => clearInterval(interval))
 </script>
 
 <style scoped>
@@ -63,16 +58,17 @@ onUnmounted(() => clearInterval(interval))
   color: var(--primary-color);
 }
 
-.datetime {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-}
-
 .artist {
   font-size: 1.4rem;
   font-weight: bold;
   color: white;
   margin: 0 0 10px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .detail {
