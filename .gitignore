@@ -1,32 +1,47 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+.venv/
+venv/
+ENV/
+.env
 
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
+# Node
+node_modules/
+.pnpm-store/
+package-lock.json
+yarn.lock
+
+# Vue / Vite
+dist/
+dist-ssr/
+.nuxt/
+.output/
+.cache/
+coverage/
 *.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
+*.timestamp-*.mjs
 *.tsbuildinfo
-
 .eslintcache
+
+# Logs
+logs/
+*.log
+lerna-debug.log*
 
 # Cypress
 /cypress/videos/
@@ -35,5 +50,27 @@ coverage
 # Vitest
 __screenshots__/
 
-# Vite
-*.timestamp-*-*.mjs
+# Media
+*.mp4
+*.mp3
+*.wav
+*.webm
+*.mkv
+downloads/
+
+# Archives
+.archive
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

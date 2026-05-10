@@ -1,4 +1,42 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./fonts/Inter-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+}
+
 :root {
-  --primary-color: #00cfff;
-  --overlay-bg: rgba(11, 12, 24, 0.5);
+  --primary-color: #1DDDF2;
+  --text-color: #ffffff;
+  --overlay-bg: #00000063;
+  --font-family: 'Inter', sans-serif;
+  --overlay-z: 10;
+}
+
+html, body, #app {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+
+.overlay-bar {
+  background: var(--overlay-bg);
+  z-index: var(--overlay-z);
+  pointer-events: none;
 }

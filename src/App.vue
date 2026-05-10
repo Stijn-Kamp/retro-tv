@@ -3,7 +3,7 @@ import VideoPlayer from './components/VideoPlayer.vue'
 import ChannelLogo from './components/ChannelLogo.vue'
 import BottomBar from './components/BottomBar.vue'
 import Sidebar from './components/SideBar.vue'
-import pumpIt from './videos/The Black Eyed Peas - Pump It (Official Music Video).mp4'
+import pumpIt from '/home/stijn/Projects/retro-tv/downloads/Eminem - Without Me (Official Music Video).mp4'
 </script>
 
 <template>
@@ -11,7 +11,7 @@ import pumpIt from './videos/The Black Eyed Peas - Pump It (Official Music Video
     <VideoPlayer :src="pumpIt" />
     <ChannelLogo />
     <Sidebar />
-    <BottomBar />
+    <BottomBar title="News" message="Wereldgozers gaan op vakantie" />  
   </div>
 </template>
 
