@@ -14,14 +14,26 @@
 </template>
 
 <script setup>
-import Thumbnail from './Thumbnail.vue'
-import NextUp from './NextUp.vue'
-import NowPlaying from './NowPlaying.vue'
+  import { computed } from 'vue'
 
-defineProps({
-  current: Object,
-  next: Object,
-})
+  import Thumbnail from './Thumbnail.vue'
+  import NextUp from './NextUp.vue'
+  import NowPlaying from './NowPlaying.vue'
+
+  const props = defineProps({
+    queue: {
+      type: Array,
+      default: () => []
+    }
+  })
+
+  const current = computed(() => {
+    return props.queue?.[0] ?? null
+  })
+
+  const next = computed(() => {
+    return props.queue?.[1] ?? null
+  })
 </script>
 
 <style scoped>

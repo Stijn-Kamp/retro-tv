@@ -19,15 +19,47 @@ function shuffle(arr) {
   return a
 }
 
-function buildSongs() {
-  return Object.keys(videoModules).map(videoKey => {
-    const metaKey = videoKey.replace(/\/[^/]+\.mp4$/, '/metadata.json')
-    const meta = metadataModules[metaKey]?.default ?? metadataModules[metaKey] ?? null
+/**
+ * Normalize Vite JSON module output safely
+ */
+function unwrapJson(module) {
+  const raw =
+    module?.default ??
+    module?.json ??
+    module ??
+    {}
 
+  if (!raw || typeof raw !== 'object') return null
+
+  // If it's already a flat metadata object, return it
+  if (raw.title || raw.artist || raw.album || raw.release_id) {
+    return raw
+  }
+
+  // Otherwise assume it's a { filename: metadata } map
+  return Object.values(raw)[0] ?? null
+}
+
+function buildSongs() {
+  const metaEntries = Object.entries(metadataModules)
+
+  return Object.keys(videoModules).map(videoKey => {
     const videoSrc = videoModules[videoKey].default
+
+    const videoFolder = videoKey.substring(0, videoKey.lastIndexOf('/'))
+
+    // ✅ robust match: find metadata whose key contains SAME folder
+    const metaEntry = metaEntries.find(([metaKey]) =>
+      metaKey.includes(videoFolder.split('/').pop())
+    )
+
+    const meta = unwrapJson(metaEntry[1]) 
+
+
+
     const coverSrc = videoSrc.replace(/\/[^/]+\.mp4(\?.*)?$/, '/cover.jpg')
 
-    if (meta) {
+    if (metaEntry) {
       return {
         src: videoSrc,
         cover: coverSrc,
@@ -36,7 +68,7 @@ function buildSongs() {
         album: meta.album ?? '',
         date: meta.date ?? '',
         year: meta.year ?? '',
-        duration: meta.duration_str ?? '',
+        duration: meta.duration ?? '',
         release_id: meta.release_id ?? '',
       }
     }
@@ -92,27 +124,14 @@ export function usePlaylist() {
     showBottomBar.value = false
 
     const schedule = [
-      {
-        at: 5000,
-        run: () => (showTitleBar.value = false)
-      },
-      {
-        at: 10000,
-        run: () => (showImageViewer.value = false)
-      },
-      {
-        at: 20000,
-        run: () => (showSidebar.value = true)
-      },
-      {
-        at: 20000,
-        run: () => (showBottomBar.value = true)
-      }
+      { at: 5000, run: () => (showTitleBar.value = false) },
+      { at: 10000, run: () => (showImageViewer.value = false) },
+      { at: 20000, run: () => (showSidebar.value = true) },
+      { at: 20000, run: () => (showBottomBar.value = true) }
     ]
 
     schedule.forEach(step => {
-      const t = setTimeout(step.run, step.at)
-      timers.push(t)
+      timers.push(setTimeout(step.run, step.at))
     })
   }
 
@@ -123,9 +142,7 @@ export function usePlaylist() {
     return playlist.value[(currentIndex.value + 1) % playlist.value.length]
   })
 
-  watch(currentSong, () => {
-    runSchedule()
-  }, { immediate: true })
+  watch(currentSong, () => runSchedule(), { immediate: true })
 
   function playNext() {
     currentIndex.value = (currentIndex.value + 1) % playlist.value.length

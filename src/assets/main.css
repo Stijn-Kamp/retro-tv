@@ -20,7 +20,7 @@
 }
 
 :root {
-  --primary-color: #e2c618; /* #1DDDF2; */
+  --primary-color: #1dddf2; /* #e2c618; */
   --text-color: #ffffff;
   --overlay-bg: #37343b;
   --font-family: 'Inter', sans-serif;

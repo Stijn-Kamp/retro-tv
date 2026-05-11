@@ -9,15 +9,7 @@ import Sidebar from './components/SideBar.vue'
 import PlayerControls from './components/PlayerControls.vue'
 import { usePlaylist } from './playlist.js'
 import { useRandomBackground } from './imageretriever.js'
-
-const newsItems = [
-        { title: 'NEWS', message: '32 overleden guppies gevonden in petfles' },
-        { title: 'NEWS', message: 'Stijn en Jan bakken er niks van' },
-        { title: 'NEWS', message: 'Uit recent onderzoek blijkt dat choco waffa\'s vet smerig zijn' },
-        { title: 'NEWS', message: 'Man uit Nibbixwoud overlijd bija door hoogte verschil, situatie is weer stabiel na toedienen paarden geneesmiddel'},
-        { title: 'NEWS', message: 'Opel Kadett komt stil te staan op de Karelsbrug in Praag'},
-        { title: 'NEWS', message: 'Grote hoeveelheden goud gevonden met 3D-geprinte goud pan'}
-      ]
+import { messages } from './messages.js'
 
 const {
     queue,
@@ -68,14 +60,13 @@ function togglePause() {
     <Transition name="side">
       <Sidebar
         v-if="showSidebar"
-        :current="currentSong"
-        :next="queue[1]"
+        :queue="queue"
       />
     </Transition>
     <Transition name="bottom">
       <BottomBar
         v-if="showBottomBar"
-        :items="newsItems"
+        :items="messages"
       />
     </Transition>
     <Transition name="bottom">
