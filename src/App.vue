@@ -13,7 +13,10 @@ import { useRandomBackground } from './imageretriever.js'
 const newsItems = [
         { title: 'NEWS', message: '32 overleden guppies gevonden in petfles' },
         { title: 'NEWS', message: 'Stijn en Jan bakken er niks van' },
-        { title: 'NEWS', message: 'Uit recent onderzoek blijkt dat choco waffa\'s vet smerig zijn' }
+        { title: 'NEWS', message: 'Uit recent onderzoek blijkt dat choco waffa\'s vet smerig zijn' },
+        { title: 'NEWS', message: 'Man uit Nibbixwoud overlijd bija door hoogte verschil, situatie is weer stabiel na toedienen paarden geneesmiddel'},
+        { title: 'NEWS', message: 'Opel Kadett komt stil te staan op de Karelsbrug in Praag'},
+        { title: 'NEWS', message: 'Grote hoeveelheden goud gevonden met 3D-geprinte goud pan'}
       ]
 
 const {
