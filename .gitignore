@@ -57,6 +57,7 @@ __screenshots__/
 *.webm
 *.mkv
 downloads/
+media/
 
 # Archives
 .archive

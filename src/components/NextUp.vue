@@ -17,13 +17,6 @@ defineProps({
   flex-shrink: 0;
 }
 
-.label {
-  font-size: 2rem;
-  font-weight: bold;
-  color: var(--primary-color);
-  margin: 0 0 6px;
-}
-
 .song {
   font-size: 1rem;
   color: white;

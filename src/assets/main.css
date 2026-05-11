@@ -20,9 +20,9 @@
 }
 
 :root {
-  --primary-color: #1DDDF2;
+  --primary-color: #e2c618; /* #1DDDF2; */
   --text-color: #ffffff;
-  --overlay-bg: #2a2b2d77;
+  --overlay-bg: #37343b;
   --font-family: 'Inter', sans-serif;
   --overlay-z: 10;
 }
@@ -37,9 +37,20 @@ html, body, #app {
 }
 
 .overlay-bar {
-  background: var(--overlay-bg);
+  position: relative; 
   z-index: var(--overlay-z);
-  pointer-events: none;
+}
+
+.overlay-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background: var(--overlay-bg); 
+  opacity: 0.5;  
+
+  z-index: -1;
+  pointer-events: none; 
 }
 
 .slide-fade-enter-active,
@@ -55,4 +66,33 @@ html, body, #app {
 .slide-fade-leave-to {
   opacity: 0;
   transform: translateY(-10px);
+}
+
+.label {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 0 0 6px;
+}
+
+.bottom-enter-active,
+.bottom-leave-active {
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.bottom-enter-from,
+.bottom-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.side-enter-active,
+.side-leave-active {
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.side-enter-from,
+.side-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
 }

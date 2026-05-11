@@ -1,13 +1,36 @@
 <script setup>
 import { ref } from 'vue'
 import VideoPlayer from './components/VideoPlayer.vue'
+import ImageViewer from './components/ImageViewer.vue'
+import TitleBar from './components/TitleBar.vue'
 import ChannelLogo from './components/ChannelLogo.vue'
 import BottomBar from './components/BottomBar.vue'
 import Sidebar from './components/SideBar.vue'
 import PlayerControls from './components/PlayerControls.vue'
 import { usePlaylist } from './playlist.js'
+import { useRandomBackground } from './imageretriever.js'
 
-const { queue, playNext, playPrev, reshuffle } = usePlaylist()
+const newsItems = [
+        { title: 'NEWS', message: '32 overleden guppies gevonden in petfles' },
+        { title: 'NEWS', message: 'Stijn en Jan bakken er niks van' },
+        { title: 'NEWS', message: 'Uit recent onderzoek blijkt dat choco waffa\'s vet smerig zijn' }
+      ]
+
+const {
+    queue,
+    currentSong,
+    nextSong,
+    playNext,
+    playPrev,
+    reshuffle,
+    showTitleBar,
+    showImageViewer,
+    showSidebar,
+    showBottomBar
+  } = usePlaylist()
+
+const { currentImage } = useRandomBackground(currentSong)
+
 const paused = ref(false)
 const controlsVisible = ref(false)
 let hideTimer = null
@@ -39,14 +62,29 @@ function togglePause() {
         @reshuffle="reshuffle"
       />
     </Transition>
-    <Sidebar :current="queue[0]" :next="queue[1]" />
-    <BottomBar
-      :items="[
-        { title: 'NEWS', message: 'Wereldgozers gaan op vakantie' },
-        { title: 'NEWS', message: 'Robs auto is stuk' },
-        { title: 'NEWS', message: 'Het wordt weer gezellig' }
-      ]"
-    />
+    <Transition name="side">
+      <Sidebar
+        v-if="showSidebar"
+        :current="currentSong"
+        :next="queue[1]"
+      />
+    </Transition>
+    <Transition name="bottom">
+      <BottomBar
+        v-if="showBottomBar"
+        :items="newsItems"
+      />
+    </Transition>
+    <Transition name="bottom">
+      <TitleBar v-if="showTitleBar" :song="currentSong" />
+    </Transition>
+
+    <Transition name="fade">
+      <ImageViewer
+        v-if="showImageViewer"
+        :src="currentImage"
+      />
+    </Transition>
   </div>
 </template>
 

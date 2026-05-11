@@ -1,13 +1,15 @@
 <template>
   <div class="right-sidebar overlay-bar">
-    <Thumbnail :src="current?.thumbnail" />
     <NowPlaying
       :artist="current?.artist"
       :song="current?.title"
       :album="current?.album"
-      :year="current?.date"
+      :year="current?.year"
     />
     <NextUp :song="next?.filename" />
+    <div class="thumbnail-wrapper">
+      <Thumbnail :src="current?.thumbnail" />
+    </div>
   </div>
 </template>
 
@@ -31,5 +33,9 @@ defineProps({
   width: 280px;
   display: flex;
   flex-direction: column;
+}
+
+.thumbnail-wrapper {
+  margin-top: auto;
 }
 </style>
