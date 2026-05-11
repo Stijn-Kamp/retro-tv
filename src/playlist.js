@@ -1,14 +1,9 @@
 import { ref, computed, watch } from 'vue'
 
-const videoModules = import.meta.glob(
-  '../media/songs/**/*.mp4',
-  { eager: true }
-)
+const videoModules = import.meta.glob('../media/songs/**/*.mp4', { eager: true })
+const metadataModules = import.meta.glob('../media/songs/**/metadata.json', { eager: true })
 
-const metadataModules = import.meta.glob(
-  '../media/songs/**/metadata.json',
-  { eager: true }
-)
+// --- Helpers ---
 
 function shuffle(arr) {
   const a = [...arr]
@@ -19,83 +14,67 @@ function shuffle(arr) {
   return a
 }
 
-/**
- * Normalize Vite JSON module output safely
- */
-function unwrapJson(module) {
-  const raw =
-    module?.default ??
-    module?.json ??
-    module ??
-    {}
-
+function unwrapMeta(module) {
+  const raw = module?.default ?? module ?? {}
   if (!raw || typeof raw !== 'object') return null
-
-  // If it's already a flat metadata object, return it
-  if (raw.title || raw.artist || raw.album || raw.release_id) {
-    return raw
-  }
-
-  // Otherwise assume it's a { filename: metadata } map
+  if (raw.title || raw.artist || raw.album) return raw
   return Object.values(raw)[0] ?? null
 }
 
+function findMeta(videoKey) {
+  const folderName = videoKey.split('/').slice(0, -1).pop()
+  const entry = Object.entries(metadataModules).find(([k]) => k.includes(folderName))
+  return entry ? unwrapMeta(entry[1]) : null
+}
+
+function songFromMeta(videoSrc, coverSrc, meta) {
+  return {
+    src: videoSrc,
+    cover: coverSrc,
+    title: meta.title ?? '',
+    artist: meta.artist ?? '',
+    album: meta.album ?? '',
+    date: meta.date ?? '',
+    year: meta.year ?? '',
+    duration: meta.duration_str ?? '',
+    release_id: meta.release_id ?? '',
+  }
+}
+
+function songFromFilename(videoSrc, coverSrc, videoKey) {
+  const filename = videoKey.split('/').pop().replace('.mp4', '')
+  const dash = filename.indexOf(' - ')
+  const artist = dash !== -1 ? filename.slice(0, dash).trim() : filename
+  const title = dash !== -1
+    ? filename.slice(dash + 3)
+        .replace(/\s*\(official.*?\)/i, '')
+        .replace(/\s*\[official.*?\]/i, '')
+        .trim()
+    : filename
+  return { src: videoSrc, cover: coverSrc, title, artist, album: '', date: '', year: '', duration: '', release_id: '' }
+}
+
 function buildSongs() {
-  const metaEntries = Object.entries(metadataModules)
-
-  return Object.keys(videoModules).map(videoKey => {
-    const videoSrc = videoModules[videoKey].default
-
-    const videoFolder = videoKey.substring(0, videoKey.lastIndexOf('/'))
-
-    // ✅ robust match: find metadata whose key contains SAME folder
-    const metaEntry = metaEntries.find(([metaKey]) =>
-      metaKey.includes(videoFolder.split('/').pop())
-    )
-
-    const meta = unwrapJson(metaEntry[1]) 
-
-
-
+  return Object.entries(videoModules).map(([videoKey, mod]) => {
+    const videoSrc = mod.default
     const coverSrc = videoSrc.replace(/\/[^/]+\.mp4(\?.*)?$/, '/cover.jpg')
-
-    if (metaEntry) {
-      return {
-        src: videoSrc,
-        cover: coverSrc,
-        title: meta.title ?? '',
-        artist: meta.artist ?? '',
-        album: meta.album ?? '',
-        date: meta.date ?? '',
-        year: meta.year ?? '',
-        duration: meta.duration ?? '',
-        release_id: meta.release_id ?? '',
-      }
-    }
-
-    const filename = videoKey.split('/').pop().replace('.mp4', '')
-    const dashIndex = filename.indexOf(' - ')
-    const artist = dashIndex !== -1 ? filename.slice(0, dashIndex).trim() : filename
-    const title = dashIndex !== -1
-      ? filename.slice(dashIndex + 3)
-          .replace(/\s*\(official.*?\)/i, '')
-          .replace(/\s*\[official.*?\]/i, '')
-          .trim()
-      : filename
-
-    return {
-      src: videoSrc,
-      cover: coverSrc,
-      title,
-      artist,
-      album: '',
-      date: '',
-      year: '',
-      duration: '',
-      release_id: '',
-    }
+    const meta = findMeta(videoKey)
+    return meta
+      ? songFromMeta(videoSrc, coverSrc, meta)
+      : songFromFilename(videoSrc, coverSrc, videoKey)
   })
 }
+
+// --- Schedule ---
+
+const SCHEDULE = [
+  { at: 5000,  key: 'showTitleBar',    value: false },
+  { at: 10000, key: 'showImageViewer', value: false },
+  { at: 20000, key: 'showSidebar',     value: true  },
+  { at: 20000, key: 'showBottomBar',   value: true  },
+]
+
+// --- Playlist ---
 
 const allSongs = buildSongs()
 
@@ -103,54 +82,40 @@ export function usePlaylist() {
   const playlist = ref(shuffle(allSongs))
   const currentIndex = ref(0)
 
-  const showTitleBar = ref(true)
+  const showTitleBar    = ref(true)
   const showImageViewer = ref(true)
-  const showSidebar = ref(false)
-  const showBottomBar = ref(false)
+  const showSidebar     = ref(false)
+  const showBottomBar   = ref(false)
+
+  const visibility = { showTitleBar, showImageViewer, showSidebar, showBottomBar }
 
   const timers = []
 
-  function clearSchedule() {
-    timers.forEach(t => clearTimeout(t))
-    timers.length = 0
-  }
-
   function runSchedule() {
-    clearSchedule()
+    timers.forEach(clearTimeout)
+    timers.length = 0
 
-    showTitleBar.value = true
+    showTitleBar.value    = true
     showImageViewer.value = true
-    showSidebar.value = false
-    showBottomBar.value = false
+    showSidebar.value     = false
+    showBottomBar.value   = false
 
-    const schedule = [
-      { at: 5000, run: () => (showTitleBar.value = false) },
-      { at: 10000, run: () => (showImageViewer.value = false) },
-      { at: 20000, run: () => (showSidebar.value = true) },
-      { at: 20000, run: () => (showBottomBar.value = true) }
-    ]
-
-    schedule.forEach(step => {
-      timers.push(setTimeout(step.run, step.at))
+    SCHEDULE.forEach(({ at, key, value }) => {
+      timers.push(setTimeout(() => { visibility[key].value = value }, at))
     })
   }
 
   const currentSong = computed(() => playlist.value[currentIndex.value])
+  const nextSong    = computed(() => playlist.value[(currentIndex.value + 1) % playlist.value.length] ?? null)
 
-  const nextSong = computed(() => {
-    if (!playlist.value.length) return null
-    return playlist.value[(currentIndex.value + 1) % playlist.value.length]
-  })
-
-  watch(currentSong, () => runSchedule(), { immediate: true })
+  watch(currentSong, runSchedule, { immediate: true })
 
   function playNext() {
     currentIndex.value = (currentIndex.value + 1) % playlist.value.length
   }
 
   function playPrev() {
-    currentIndex.value =
-      (currentIndex.value - 1 + playlist.value.length) % playlist.value.length
+    currentIndex.value = (currentIndex.value - 1 + playlist.value.length) % playlist.value.length
   }
 
   function reshuffle() {
@@ -170,9 +135,6 @@ export function usePlaylist() {
     playNext,
     playPrev,
     reshuffle,
-    showTitleBar,
-    showImageViewer,
-    showSidebar,
-    showBottomBar
+    ...visibility,
   }
 }
