@@ -188,22 +188,27 @@ def download_song_video(song_name, playlist_dir, archive_file=None, log_path=Non
 
     artist, title = (song_name.split(" - ", 1) + ["Unknown"])[:2]
 
+    safe_song_name = sanitize_folder_name(f"{artist} - {title}")
+
     song_dir = os.path.join(
         playlist_dir,
-        sanitize_folder_name(f"{artist} - {title}")
+        safe_song_name
     )
     os.makedirs(song_dir, exist_ok=True)
+
+    output_path = os.path.join(song_dir, f"{safe_song_name}.%(ext)s")
 
     ydl_opts = {
         "format": "bv*+ba/best",
         "merge_output_format": "mp4",
-        "outtmpl": os.path.join(song_dir, "%(title).200s.%(ext)s"),
-        "restrictfilenames": True,
+        "outtmpl": output_path,
+        "restrictfilenames": False,
         "noplaylist": True,
         "retries": 10,
         "fragment_retries": 10,
         "socket_timeout": 30,
         "quiet": False,
+        "cookiefile": "/home/stijn/Downloads/cookies.txt",    
     }
 
     if archive_file:
@@ -280,6 +285,6 @@ def download_from_txt(filename: str, output_dir: str = "downloads"):
 # ----------------------------
 
 download_from_txt(
-    "/home/stijn/Downloads/De 2012 playlist (pop).txt",
+    "/home/stijn/Downloads/enimem playlist.txt",
     "media/songs"
 )
