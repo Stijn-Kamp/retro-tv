@@ -35,8 +35,8 @@ function rowToSong(row) {
 // --- Schedule ---
 
 const SCHEDULE = [
-  { at: 5000,  key: 'showTitleBar',    value: false },
-  { at: 10000, key: 'showImageViewer', value: false },
+  { at: 7000,  key: 'showTitleBar',    value: false },
+  { at: 15000, key: 'showImageViewer', value: false },
   { at: 20000, key: 'showSidebar',     value: true  },
   { at: 20000, key: 'showBottomBar',   value: true  },
 ]

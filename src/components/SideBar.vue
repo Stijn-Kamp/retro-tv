@@ -5,8 +5,14 @@
 
         <div v-if="!showPlaylist" class="content">
           <NowPlaying :song="current" />
-          <NextUp :song="next" />
-          <NextUp :song="later" label="later" />
+          <Transition name="fade" mode="out-in">
+            <div :key="showNext ? 'visible' : 'hidden'" class="next-block">
+              <template v-if="showNext">
+                <NextUp :song="next" label="Next" />
+                <NextUp :song="later" label="Later" />
+              </template>
+            </div>
+          </Transition>
           <Thumbnail class="thumbnail-wrapper" :src="current?.thumbnail" />
         </div>
 
@@ -25,16 +31,25 @@
   import Playlist from './Playlist.vue'
   
   const showPlaylist = ref(false)
+  const showNext = ref(true)
   
-  let interval
+  let playlistInterval
+  let nextInterval
 
   onMounted(() => {
-    interval = setInterval(() => {
+    playlistInterval = setInterval(() => {
       showPlaylist.value = !showPlaylist.value
     }, 15000)
+
+    // nextInterval = setInterval(() => {
+    //   showNext.value = !showNext.value
+    // }, 5000)
   })
 
-  onUnmounted(() => clearInterval(interval))
+  onUnmounted(() => {
+    clearInterval(playlistInterval)
+    clearInterval(nextInterval)
+  })
 
   const props = defineProps({
     queue: {

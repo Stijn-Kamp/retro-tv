@@ -51,7 +51,7 @@ onUnmounted(() => clearInterval(timer))
   bottom: 0;
   left: 0;
   right: 390px;
-  height: 30px;
+  height: 45px;
   display: flex;
   align-items: center;
   margin: 30px;
@@ -65,6 +65,7 @@ onUnmounted(() => clearInterval(timer))
   display: flex;
   align-items: center;
   gap: 16px;
+  font-size: 2em;
 }
 
 .title {

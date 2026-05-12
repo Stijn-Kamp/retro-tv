@@ -3,7 +3,6 @@ import messagesRaw from './messages.csv?raw'
 function parseCSV(csv) {
   const lines = csv.trim().split('\n')
 
-  // assume: title,message
   return lines.slice(1).map(line => {
     const [title, message] = line.split(',')
 
@@ -14,4 +13,13 @@ function parseCSV(csv) {
   })
 }
 
-export const messages = parseCSV(messagesRaw)
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+export const messages = shuffle(parseCSV(messagesRaw))

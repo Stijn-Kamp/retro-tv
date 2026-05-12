@@ -225,6 +225,13 @@ def download_song(csv_meta: dict, playlist_dir: str, con: sqlite3.Connection,
 
     output_path = os.path.join(song_dir, f"{folder_name}.%(ext)s")
 
+    if any(
+        f.endswith(".mp4")
+        for f in os.listdir(song_dir)
+    ):
+        print(f"  ↳ Skipping (already downloaded): {artist} - {title}")
+        return
+
     ydl_opts = {
         "format": "bv*+ba/best",
         "merge_output_format": "mp4",
@@ -235,7 +242,7 @@ def download_song(csv_meta: dict, playlist_dir: str, con: sqlite3.Connection,
         "fragment_retries": 10,
         "socket_timeout": 30,
         "quiet": False,
-        "cookiefile": "/home/stijn/Downloads/cookies.txt",
+        "cookiefile": "/home/stijn/Downloads/www.youtube.com_cookies.txt",
     }
 
     if archive_file:
