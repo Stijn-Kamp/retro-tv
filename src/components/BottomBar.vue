@@ -50,7 +50,7 @@ onUnmounted(() => clearInterval(timer))
   position: absolute;
   bottom: 0;
   left: 0;
-  right: 280px;
+  right: 390px;
   height: 30px;
   display: flex;
   align-items: center;

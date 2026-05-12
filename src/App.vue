@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import InfoComponent from './components/InfoComponent.vue';
 import VideoPlayer from './components/VideoPlayer.vue'
 import ImageViewer from './components/ImageViewer.vue'
 import TitleBar from './components/TitleBar.vue'
@@ -44,9 +45,10 @@ function togglePause() {
 </script>
 
 <template>
-  <div class="tv-app" @mousemove="onMouseMove">
-    <VideoPlayer :src="queue[0].src" :paused="paused" @ended="playNext" />
+  <div v-if="queue.length" class="tv-app" @mousemove="onMouseMove">
+    <VideoPlayer :src="currentSong.src" :paused="paused" @ended="playNext" />
     <ChannelLogo />
+    <InfoComponent />
     <Transition name="fade">
       <PlayerControls
         v-if="controlsVisible"

@@ -1,5 +1,5 @@
 <template>
-  <div class="rotating-panel">
+  <div class="rotating-panel info-overlay">
     <Transition name="slide-fade" mode="out-in">
       <CurrentTime v-if="showTime" key="time" />
       <CurrentWeather v-else key="weather" />
@@ -24,3 +24,14 @@ onMounted(() => {
 
 onUnmounted(() => clearInterval(interval))
 </script>
+
+<style>
+.info-overlay {
+  position: absolute;
+  padding: 1em;
+  z-index: 20;
+  top: 25px;
+  right: 30px;
+  font-size: 1.5em;;
+}
+</style>

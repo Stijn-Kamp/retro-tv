@@ -1,24 +1,40 @@
 <template>
   <div class="right-sidebar overlay-bar">
-    <NowPlaying
-      :artist="current?.artist"
-      :song="current?.title"
-      :album="current?.album"
-      :year="current?.year"
-    />
-    <NextUp :song="next?.filename" />
-    <div class="thumbnail-wrapper">
-      <Thumbnail :src="current?.thumbnail" />
-    </div>
+    <Transition name="slide-fade" mode="out-in">
+      <div :key="showPlaylist ? 'playlist' : 'info'" class="content-wrapper">
+
+        <div v-if="!showPlaylist" class="content">
+          <NowPlaying :song="current" />
+          <NextUp :song="next" />
+          <NextUp :song="later" label="later" />
+          <Thumbnail class="thumbnail-wrapper" :src="current?.thumbnail" />
+        </div>
+
+        <Playlist v-else :queue="queue" />
+
+      </div>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-  import { computed } from 'vue'
-
+  import { computed, ref, onMounted, onUnmounted  } from 'vue'
   import Thumbnail from './Thumbnail.vue'
   import NextUp from './NextUp.vue'
   import NowPlaying from './NowPlaying.vue'
+  import Playlist from './Playlist.vue'
+  
+  const showPlaylist = ref(false)
+  
+  let interval
+
+  onMounted(() => {
+    interval = setInterval(() => {
+      showPlaylist.value = !showPlaylist.value
+    }, 15000)
+  })
+
+  onUnmounted(() => clearInterval(interval))
 
   const props = defineProps({
     queue: {
@@ -34,6 +50,10 @@
   const next = computed(() => {
     return props.queue?.[1] ?? null
   })
+
+  const later = computed(() => {
+    return props.queue?.[2] ?? null
+  })
 </script>
 
 <style scoped>
@@ -42,9 +62,19 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: 280px;
+  width: 400px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  padding-top: 1em;
+  font-size: 2em;
+}
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .thumbnail-wrapper {

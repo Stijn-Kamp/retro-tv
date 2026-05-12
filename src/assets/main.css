@@ -33,7 +33,7 @@ html, body, #app {
   overflow: hidden;
   font-family: var(--font-family);
   color: var(--text-color);
-  font-weight: bold;
+  font-size: 14px;
 }
 
 .overlay-bar {
@@ -95,4 +95,19 @@ html, body, #app {
 .side-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+.header {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: 8px;
+}
+
+.artist {
+  color: white;
+}
+
+.title {
+  opacity: .7;
 }

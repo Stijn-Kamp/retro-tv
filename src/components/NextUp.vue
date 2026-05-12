@@ -1,13 +1,23 @@
 <template>
-  <div class="next-up">
-    <p class="label">Next</p>
-    <p class="song">{{ song }}</p>
+  <div class="next-up" v-if="song">
+    <p class="label">{{ label }}</p>
+    <div class="details">
+      <p class="artist"> {{ song.artist }} </p>
+      <p class="title"> {{ song.title }} </p>
+    </div>
   </div>
 </template>
 
 <script setup>
 defineProps({
-  song: String
+  song: {
+    type: Object,
+    default: null
+  },
+  label: {
+    type: String,
+    default: 'Next'
+  }
 })
 </script>
 
@@ -15,11 +25,13 @@ defineProps({
 .next-up {
   padding: 16px 20px 8px;
   flex-shrink: 0;
+  gap: .5em;
+  display: flex;
+  flex-direction: column;
 }
 
-.song {
-  font-size: 1rem;
-  color: white;
-  margin: 0;
+p {
+  margin: 0px;
 }
+
 </style>
