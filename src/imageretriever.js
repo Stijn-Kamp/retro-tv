@@ -2,7 +2,7 @@ import { ref, computed, watch } from 'vue'
 
 // change this path to whatever folder you want
 const imageModules = import.meta.glob(
-  '../media/images/**/*.{jpg,jpeg,png}',
+  '../media/images/**/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,WEBP,avif,AVIF,gif,GIF,svg,SVG}',
   { eager: true }
 )
 

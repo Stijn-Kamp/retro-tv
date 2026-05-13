@@ -317,6 +317,6 @@ def download_from_csv(csv_path: str, output_dir: str = "media/songs"):
 # ----------------------------
 
 download_from_csv(
-    "/home/stijn/Downloads/De 2012 playlist (pop).csv",
+    "/home/stijn/Downloads/The Real Slim Shady.csv",
     "media/songs"
 )

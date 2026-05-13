@@ -1,7 +1,26 @@
 import { ref, computed, watch } from 'vue'
 
-// --- Helpers ---
+// --- Retro color palette ---
+const RETRO_COLORS = [
+  '#1dddf2', 
+  '#FF2052', 
+  '#e2c618', 
+  '#38b622',
+  '#9246c5', 
+  '#FF8C00', 
+]
 
+let lastColorIndex = -1
+
+function pickRetroColor() {
+  let idx
+  do { idx = Math.floor(Math.random() * RETRO_COLORS.length) }
+  while (idx === lastColorIndex)
+  lastColorIndex = idx
+  return RETRO_COLORS[idx]
+}
+
+// --- Helpers ---
 function shuffle(arr) {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
@@ -13,41 +32,40 @@ function shuffle(arr) {
 
 function rowToSong(row) {
   return {
-    src:       row.video_file,
-    cover:     row.cover_file ?? '',
-    title:     row.title ?? '',
-    artist:    row.artist ?? '',
-    album:     row.album ?? '',
-    date:      row.album_date ?? '',
-    year:      row.year ?? '',
-    duration:  row.duration_str ?? '',
-    bpm:       row.bpm ?? null,
-    energy:    row.energy ?? null,
-    genres:    row.genres ?? '',
-    camelot:   row.camelot ?? '',
-    valence:   row.valence ?? null,
+    src:        row.video_file,
+    cover:      row.cover_file ?? '',
+    title:      row.title ?? '',
+    artist:     row.artist ?? '',
+    album:      row.album ?? '',
+    date:       row.album_date ?? '',
+    year:       row.year ? String(row.year).slice(-2) : '',
+    duration:   row.duration_str ?? '',
+    bpm:        row.bpm ?? null,
+    energy:     row.energy ?? null,
+    genres:     row.genres ?? '',
+    camelot:    row.camelot ?? '',
+    valence:    row.valence ?? null,
     spotify_id: row.spotify_track_id ?? '',
-    isrc:      row.isrc ?? '',
-    yt_id:     row.yt_id ?? '',
+    isrc:       row.isrc ?? '',
+    yt_id:      row.yt_id ?? '',
   }
 }
 
 // --- Schedule ---
-
 const SCHEDULE = [
-  { at: 7000,  key: 'showTitleBar',    value: false },
+  { at:  7000, key: 'showTitleBar',    value: false },
   { at: 15000, key: 'showImageViewer', value: false },
   { at: 20000, key: 'showSidebar',     value: true  },
-  { at: 20000, key: 'showBottomBar',   value: true  },
+  { at: 30000, key: 'showBottomBar',   value: true  },
 ]
 
 // --- Playlist ---
-
 export function usePlaylist() {
   const playlist     = ref([])
   const currentIndex = ref(0)
   const loading      = ref(true)
   const error        = ref(null)
+  const primaryColor = ref('')
 
   const showTitleBar    = ref(true)
   const showImageViewer = ref(true)
@@ -56,6 +74,11 @@ export function usePlaylist() {
   const visibility = { showTitleBar, showImageViewer, showSidebar, showBottomBar }
 
   const timers = []
+
+  function applyPrimaryColor(color) {
+    primaryColor.value = color
+    document.documentElement.style.setProperty('--primary-color', color)
+  }
 
   function runSchedule() {
     timers.forEach(clearTimeout)
@@ -69,9 +92,10 @@ export function usePlaylist() {
     SCHEDULE.forEach(({ at, key, value }) => {
       timers.push(setTimeout(() => { visibility[key].value = value }, at))
     })
+
+    applyPrimaryColor(pickRetroColor())
   }
 
-  // Fetch songs from API on init
   fetch('http://localhost:3001/api/songs')
     .then(r => r.json())
     .then(rows => {
@@ -102,8 +126,18 @@ export function usePlaylist() {
   }
 
   const queue = computed(() => {
-    const rest = playlist.value.slice(currentIndex.value)
-    return rest.length ? rest : playlist.value
+    const list = playlist.value
+    const len = list.length
+    const idx = currentIndex.value
+
+    if (!len) return []
+
+    const safeIndex = ((idx % len) + len) % len
+
+    return [
+      ...list.slice(safeIndex),
+      ...list.slice(0, safeIndex)
+    ]
   })
 
   return {
@@ -112,6 +146,7 @@ export function usePlaylist() {
     nextSong,
     loading,
     error,
+    primaryColor,
     playNext,
     playPrev,
     reshuffle,
